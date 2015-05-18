@@ -121,7 +121,6 @@ for ( int i = 0 ; i < NrParticles ; i ++ )
   {
 	particle[i].frc=null3D;
 }
-
 // calculate energy and forces
 
   for ( mi[x] = 0 ; mi[x] < NrCells[x] ; mi[x]++ )
@@ -139,9 +138,10 @@ for ( int i = 0 ; i < NrParticles ; i ++ )
           for ( jj = ii + 1 ; jj <= grid[mi[x]][mi[y]][mi[z]][0] ; jj++ )
           {
 			j = grid[mi[x]][mi[y]][mi[z]][jj];
-
-			#include "pairforce_structured.h"
-
+			if ((i/2)!=(j/2))  // 2, not 2.0 , since we want integer value
+				{
+					#include "pairforce_structured.h"
+				}
           } // jj
 
           // particle j in neighbour cell to i
@@ -156,15 +156,25 @@ for ( int i = 0 ; i < NrParticles ; i ++ )
             for ( jj = 1 ; jj <= grid[mj[x]][mj[y]][mj[z]][0] ; jj++ )
             {
 				j = grid[mj[x]][mj[y]][mj[z]][jj];
-
-				#include "pairforce_structured.h"
-
+			if ((i/2)!=(j/2)) // 2, not 2.0 , since we want integer value
+				{
+					#include "pairforce_structured.h"
+				}
             } // jj
           } // m
         } // ii
       } // miz
     } // miy
   } // mix
+
+for ( int i = 0 ; i < NrParticles/2 ; i ++ ) // 2, not 2.0 , since we want integer value
+	{ 
+		dR=particle[2*i].pos-particle[2*i+1].pos;
+		dR.PBC(box,rbox);
+		particle[2*i].frc-=(dR)*Spring_Const;
+		particle[2*i+1].frc+=(dR)*Spring_Const;
+	}
+
 
 }
 

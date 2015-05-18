@@ -43,7 +43,32 @@ void createInitialPosition_N_particles(std::string fileName,std::string fileName
  	}
  	outFile.close();
 }
-
+void createInitialPosition_N_dimer_molecules(std::string fileName,std::string fileName2, int N, double Lx, double Ly, double Lz, double L0) {
+	double x,y,z, vx, vy, vz, vmolx,vmoly, vmolz;
+ 	srand (time(NULL)); // initialize random seed
+ 	std::ofstream outFile(fileName);
+ 	std::ofstream outFile2(fileName2);
+ 	for(int i=0;i<N/2;i++) {
+ 		x=((double) rand() / (RAND_MAX/Lx))-Lx/2;  // create particle position from -Lx/2 to Lx/2
+		y=((double) rand() / (RAND_MAX/Ly))-Ly/2;
+		z=((double) rand() / (RAND_MAX/Lz))-Lz/2;
+		vmolx= ((double) rand()/(RAND_MAX)-0.5);
+		vmoly= ((double) rand()/(RAND_MAX)-0.5);
+		vmolz= ((double) rand()/(RAND_MAX)-0.5);
+		vx= vmolx	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3);
+		vy= vmoly	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3);
+		vz= vmolz	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3);
+		outFile<<x<<'\t'<<y<<'\t'<<z<<std::endl;
+		outFile2<<vx<<'\t'<<vy<<'\t'<<vz<<std::endl;
+		x=x+L0;  // create particle position at L0 from frist molecule 
+		vx=vmolx-(vx-vmolx);
+		vy=vmoly-(vy-vmoly);
+		vz=vmolz-(vz-vmolz);
+		outFile<<x<<'\t'<<y<<'\t'<<z<<std::endl;
+		outFile2<<vx<<'\t'<<vy<<'\t'<<vz<<std::endl;
+ 	}
+ 	outFile.close();
+}
 std::vector<int> radialDistFunc(double XYZ[][3], double Lx,double Ly, double Lz, double dr, int N) {
     std::vector<int> rdf((int) floor(sqrt(pow(Lx/2,2)+pow(Ly/2,2)+pow(Lz/2,2)))/dr,0);
 	double r;
@@ -179,7 +204,7 @@ else {
 	std::string fileName2="../Initial_Velocities.dat";
 
 if (if_create_particles) {
-createInitialPosition_N_particles(fileName,fileName2,NrParticles,Lx,Ly,Lz);
+createInitialPosition_N_dimer_molecules(fileName,fileName2,NrParticles,Lx,Ly,Lz,L0);
 }
 //read x,y positions from XY.dat
 std::ifstream dataFile(fileName);
