@@ -34,7 +34,7 @@ using namespace std;
 	vector<vector<int>> temp_pair(4,vector<int> (3))	;
 	for (int i=0; i<4; i++) 
 		{
-			temp_pair[i][0]=4-i;
+			temp_pair[i][0]=(4-i)/2;
 			temp_pair[i][1]=2*i;
 			temp_pair[i][2]=3*i;
 		}	
