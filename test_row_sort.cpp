@@ -52,6 +52,25 @@ using namespace std;
 	 		for (int i=0; i<4; i++) 
 		{
 					cout<<temp_pair[i][0]<<'\t'<<temp_pair[i][1]<<'\t'<<temp_pair[i][2]<<'\t'<<endl;
+		}	 	
+		int size=4;
+		int i=0;
+	 	do
+		{
+			if (temp_pair[i][0]==temp_pair[i+1][0])
+				{
+					temp_pair.erase( temp_pair.begin() + i);
+					i-=1;
+					size-=1;
+				}
+			i=i+1;			
+		} while (i<size-1);
+		
+			 	cout<<"After Unique "<<endl;
+
+	 		for (int i=0; i<size; i++) 
+		{
+					cout<<temp_pair[i][0]<<'\t'<<temp_pair[i][1]<<'\t'<<temp_pair[i][2]<<'\t'<<endl;
 		}
 	return 0;
 }
