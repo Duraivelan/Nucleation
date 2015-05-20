@@ -6,6 +6,9 @@
 #include <cmath>
 #include <tuple>
 #include <dirent.h>
+#include <algorithm>
+#include <functional>
+#include <array>
 # include "defs.h"
 # include "force_structured.h"
 
@@ -25,6 +28,21 @@ using namespace std;
 }
 */
 
+// compare two rows by elements of the first elemtn of the row for sroting 
+
+ struct RowSort {
+        bool operator()(vector<int> a, vector<int>  b)
+        {   
+            return a[0] < b[0];
+        }   
+    } ;
+    
+    struct RowUnique {
+        bool operator()(vector<int> a, vector<int>  b)
+        {   
+            return a[1] != b[1];
+        }   
+    } ;
 // random numbers using rand function
 void createInitialPosition_N_particles(std::string fileName,std::string fileName2, int N, double Lx, double Ly, double Lz) {
 	double x,y,z, vx, vy, vz;
@@ -119,7 +137,7 @@ int main() {
          
 int if_create_particles = xxcreate, ifrestart=xxrestart;
          
-double kb=1 , T0=1, tauT=0.1;
+double kb=1 , T0=1, tauT=0.5;
 double Temp=0;
 double shear_rate = 0; //shear rate
 int ifshear = 0;// set equal to 1 for shear
@@ -132,6 +150,7 @@ int if_Periodic =1;
 
 std::cout<<cellx<<'\t'<<celly<<'\t'<<cellz<<std::endl;
 double  T_Energy, K_Energy, P_Energy, p_energy=0;
+vctr3D L_dimer[NrParticles/2];  // distance between particles of the dimer molecule 
 vctr3D dR, dr2;
 double R, r2;
 double dr=0.05; // step size for RDF calculation
@@ -143,7 +162,7 @@ vector<SubData>  particle(NrParticles);
 // variables for pair detection
 const int MaxPairs = 100 ;
 const int MaxSplit = 100 ;
-int pairs[2][MaxPairs][3] 	;		// ! third index: 1,2 = particles, 3 = time of creation / annihilation
+int pairs[2][ MaxPairs ][ 3 ] ;		// ! third index: 1,2 = particles, 3 = time of creation / annihilation
 int split[2][ MaxSplit ][ 3 ] ;	// ! ibid
 
 int life_span = 10000 	;			// ! life time of pair to qualify as "event"
@@ -274,6 +293,12 @@ for (int i=0;i<NrParticles;i++) {
 	
 	}
 }
+for ( int i = 0 ; i < NrParticles/2 ; i ++ ) // 2, not 2.0 , since we want integer value
+	{ 
+		dR=particle[2*i].pos-particle[2*i+1].pos;
+		dR.PBC(box,rbox);
+		L_dimer[i]=dR;
+	}
 
 std::ofstream outFile(dataFileName+"/K_energy.dat");
 std::ofstream outFile1(dataFileName+"/PE_energy.dat");
@@ -303,6 +328,60 @@ do {
 
  	forceUpdate(step, pairs, &pairs_now, ptr_new,  ptr_old, MaxPairs, particle, &p_energy);
 if (pair_detect) {	
+	vector<vector<int>> temp_pair(pairs_now+1,vector<int> (3))	;
+	
+	for (int pn = 1; pn<=pairs_now ; pn++) 
+		{ 
+		
+			
+			for (int j = 0; j< 3 ; j ++) 
+				{
+					temp_pair[pn][j]=pairs[ptr_new	][pn][j];
+				}
+	//			std::cout<<temp_pair[pn][0]<<'\t'<<temp_pair[pn][1]<<std::endl;
+
+		}		
+	//		std::cout<<"before sort "<<'\t'<<pairs_now<<endl;
+		
+	sort (temp_pair.begin()+1,temp_pair.end(), RowSort());
+	
+		//		std::cout<<"after sort "<<'\t'<<pairs_now<<endl;
+	for (int pn = 1; pn<=pairs_now ; pn++) 
+		{ 
+	//						std::cout<<temp_pair[pn][0]<<'\t'<<temp_pair[pn][1]<<std::endl;
+
+		}	
+	
+	
+	if(pairs_now>1) {	
+	int count=1;
+	do
+		{
+			int j=1;
+		do
+			{
+			if ((temp_pair[count][0]==temp_pair[count+j][0]) && (temp_pair[count][1]==temp_pair[count+j][1]) )
+				{
+					temp_pair.erase( temp_pair.begin() + count+ j );
+					pairs_now-=1;
+					j-=1;
+				}
+				j+=1;
+			}	while (j<=(pairs_now-count));
+			count=count+1;			
+		} while (count<pairs_now);
+	}	
+	//		std::cout<<"after unique "<<'\t'<<pairs_now<<endl;
+	for (int pn = 1; pn<=pairs_now ; pn++) 
+		{ 
+			for (int j = 0; j< 3 ; j ++) 
+				{
+					pairs[ptr_new][pn][j]=temp_pair[pn][j];
+				}
+		//					std::cout<<temp_pair[pn][0]<<'\t'<<temp_pair[pn][1]<<std::endl;
+
+		}	
+	
  //	! for all pairs in this step: did they exist before?
   ancient_birth = step - life_span ;
     for (int pn = 1; pn<=pairs_now ; pn++) { 
@@ -387,12 +466,22 @@ for (int po = 1; po<=pairs_old ; po++) {
 			{
 						K_Energy+=0.5*m*(particle[i].vel.comp[0]*particle[i].vel.comp[0]
 									   + particle[i].vel.comp[1]*particle[i].vel.comp[1]
-									   + particle[i].vel.comp[2]*particle[i].vel.comp[2]);
+									   + particle[i].vel.comp[2]*particle[i].vel.comp[2])
+									    ;
 	}
 	
 	Temp=(K_Energy)/(1.5*NrParticles*kb);
-
-
+/*	K_Energy=0;
+	for ( int i = 0 ; i < NrParticles/2; i ++ )
+			{
+				dR=particle[2*i].pos-particle[2*i+1].pos;
+				dR.PBC(box,rbox);
+				K_Energy=2*0.5*m*((particle[2*i].vel.comp[0]+particle[2*i+1].vel.comp[0])*(particle[2*i].vel.comp[0]+particle[2*i+1].vel.comp[0])*0.25
+							+	(particle[2*i].vel.comp[1]+particle[2*i+1].vel.comp[1])*(particle[2*i].vel.comp[1]+particle[2*i+1].vel.comp[1])*0.25
+							+	(particle[2*i].vel.comp[2]+particle[2*i+1].vel.comp[2])*(particle[2*i].vel.comp[2]+particle[2*i+1].vel.comp[2])*0.25)
+							+	0.5(particle[2*i].vel.comp[0]*particle[2*i].vel.comp[0];
+	
+			}	*/
 if (step%frame==0) { 
 		old_frame = step - save_span;
 		if ( old_frame > save_step ) 

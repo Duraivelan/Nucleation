@@ -10,14 +10,14 @@ r2=dr.norm2();
 			*pairs_now += 1;
 			if ( *pairs_now >= MaxPairs ) 
 			{ 
-			//	step=-1;
-			//	std::cout<<"Too many pairs"<<std::endl;
-			//	abort();
-			*pairs_now = MaxPairs;
+				step=-1;
+				std::cout<<"Too many pairs"<<std::endl;
+				abort();
+		//	*pairs_now = MaxPairs;
 			}
 
-		pairs[	ptr_new	]	[	*pairs_now	]	[ 0 ] = min(i,j);
-		pairs[	ptr_new	]	[	*pairs_now	]	[ 1 ] = max(i,j);
+		pairs[	ptr_new	]	[	*pairs_now	]	[ 0 ] = min(i/2,j/2);
+		pairs[	ptr_new	]	[	*pairs_now	]	[ 1 ] = max(i/2,j/2);
 		pairs[	ptr_new	]	[	*pairs_now	]	[ 2 ] = step;  // ! time of formation
 		}
 			 if (r2<(rs2)) {
