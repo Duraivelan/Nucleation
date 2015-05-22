@@ -3,6 +3,6 @@
 
 # include "defs.h"
 
-void forceUpdate(int step,int pairs[2][100][3] , int *pairs_now, int ptr_new, int ptr_old, int MaxPairs, vector<SubData>& particle,  double *p_energy);
+void forceUpdate(int step,int pairs[2][100][3] , int *pairs_now, int ptr_new, int ptr_old, int MaxPairs, vector<SubData>& particle,  double *p_energy ,  double *p_energy_spring);
 
 #endif

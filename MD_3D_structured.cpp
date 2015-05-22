@@ -137,11 +137,11 @@ int main() {
          
 int if_create_particles = xxcreate, ifrestart=xxrestart;
          
-double kb=1 , T0=1, tauT=0.5;
+double kb=1 , T0=0.3, tauT=0.1;
 double Temp=0;
 double shear_rate = 0; //shear rate
 int ifshear = 0;// set equal to 1 for shear
-std::string dataFileName="../1",dataFileName_new="../1" ;
+std::string dataFileName="../xxx",dataFileName_new="../xxxnew" ;
 int Max_Cluster_N=NrParticles;
 double simu_time=dt;
 int step=0, nSteps=10000, frame=10;
@@ -149,7 +149,7 @@ double vel_scale;
 int if_Periodic =1;
 
 std::cout<<cellx<<'\t'<<celly<<'\t'<<cellz<<std::endl;
-double  T_Energy, K_Energy, P_Energy, p_energy=0;
+double  T_Energy, K_Energy, P_Energy, p_energy=0, p_energy_spring=0;
 vctr3D L_dimer[NrParticles/2];  // distance between particles of the dimer molecule 
 vctr3D dR, dr2;
 double R, r2;
@@ -316,17 +316,17 @@ outFile3<<"simu_time"<<'\t'<<"Pxx"<<'\t'<<"Pyy"<<'\t'<<"Pzz"<<'\t'<<"Pxy"<<'\t'<
 }
 */
 step = 0;
-forceUpdate(step, pairs, &pairs_now, ptr_new,  ptr_old, MaxPairs, particle, &p_energy);
+forceUpdate(step, pairs, &pairs_now, ptr_new,  ptr_old, MaxPairs, particle, &p_energy , &p_energy_spring);
 
 simu_time =dt;
 do {
 	p_energy=0;	
-	
+	p_energy_spring=0;
 	verlet( particle )	;
 	
 	pairs_now = 0 ; // ! initiate
 
- 	forceUpdate(step, pairs, &pairs_now, ptr_new,  ptr_old, MaxPairs, particle, &p_energy);
+ 	forceUpdate(step, pairs, &pairs_now, ptr_new,  ptr_old, MaxPairs, particle, &p_energy , &p_energy_spring);
 if (pair_detect) {	
 	vector<vector<int>> temp_pair(pairs_now+1,vector<int> (3))	;
 	
@@ -505,7 +505,7 @@ if (step%frame==0) {
 	}
       	outFile5<<'\n'<<std::endl;
 		outFile<<K_Energy<<std::endl;
-		outFile1<<p_energy<<std::endl;
+		outFile1<<p_energy<<'\t'<<p_energy_spring<<std::endl;
 		outFile5.close();
 	}
 

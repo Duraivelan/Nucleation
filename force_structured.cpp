@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void forceUpdate(int step, int pairs [2][100][3] , int *pairs_now, int ptr_new, int ptr_old, int MaxPairs, vector<SubData>& particle,  double *p_energy) {
+void forceUpdate(int step, int pairs [2][100][3] , int *pairs_now, int ptr_new, int ptr_old, int MaxPairs, vector<SubData>& particle,  double *p_energy ,  double *p_energy_spring) {
 
   int const MaxPerCell = 50;
   int    NrCells[3],MaxNrCells;
@@ -173,6 +173,8 @@ for ( int i = 0 ; i < NrParticles/2 ; i ++ ) // 2, not 2.0 , since we want integ
 		dR.PBC(box,rbox);
 		particle[2*i].frc-=(dR)*Spring_Const;
 		particle[2*i+1].frc+=(dR)*Spring_Const;
+		*p_energy_spring+=0.5*Spring_Const*dR.norm2();
+
 	}
 
 

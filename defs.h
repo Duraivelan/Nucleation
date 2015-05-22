@@ -15,10 +15,10 @@ const double rs = 6*r_min/7; // saturation radius, below this potential is assum
 const double rs2=rs*rs;
 const double L0 = r_min/10.0; // L0 equlibrium length of the dimer molecular spring 
 const double L02 = L0*L0;
-const double Spring_Const=1;
+const double Spring_Const=10;
 const double red_m = m/2 ; //reduced mass
 const double omega = sqrt(Spring_Const/red_m);  // w=sqrt(k/mu) ; spring oscillation frequency 
-const double Lx=50, Ly=50, Lz=50;// , R_cut=2.5/*= 1.1225 */,R_shell = 0; // = 0.3775;
+const double Lx=90, Ly=90, Lz=90;// , R_cut=2.5/*= 1.1225 */,R_shell = 0; // = 0.3775;
 const double Volume =Lx*Ly*Lz;
 const double Volume_inv = 1/ Volume;
 const int cellx=(int) ceil(Lx/r_cut);
