@@ -488,12 +488,15 @@ if (step%frame==0) {
 		{
 			char filepath[256];
 			sprintf(filepath, "%s",(dataFileName+"/XYZ"+std::to_string((old_frame)/frame)+".xyz").c_str());
-		remove(filepath);
+			remove(filepath);			
+			sprintf(filepath, "%s",(dataFileName+"/VEL"+std::to_string((old_frame)/frame)+".xyz").c_str());
+			remove(filepath);
 			sprintf(filepath, "%s",(dataFileName+"/pair"+std::to_string((old_frame)/frame)+".dat").c_str());
-		remove(filepath);
+			remove(filepath);
 		}
 	
         std::ofstream outFile5(dataFileName+"/XYZ"+ std::to_string(step/frame) +".xyz");
+        std::ofstream outFile9(dataFileName+"/VEL"+ std::to_string(step/frame) +".xyz");
         
 		outFile5<<NrParticles<<std::endl;
 		outFile5<<"X Y Z co-ordinates"<<std::endl;
@@ -501,12 +504,15 @@ if (step%frame==0) {
 		for ( int i = 0 ; i < NrParticles; i ++ )
 			{
 						outFile5<<'H'<<'\t'<<particle[i].pos.comp[0]<<'\t'<<particle[i].pos.comp[1]<<'\t'<<particle[i].pos.comp[2]<<std::endl;
+						outFile9<<particle[i].vel.comp[0]<<'\t'<<particle[i].vel.comp[1]<<'\t'<<particle[i].vel.comp[2]<<std::endl;
 
 	}
       	outFile5<<'\n'<<std::endl;
+      	outFile9<<'\n'<<std::endl;
 		outFile<<K_Energy<<std::endl;
 		outFile1<<p_energy<<'\t'<<p_energy_spring<<std::endl;
 		outFile5.close();
+		outFile9.close();
 	}
 
 
