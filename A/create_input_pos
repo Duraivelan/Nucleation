@@ -1,0 +1,22 @@
+#!/bin/csh -f
+alias clang++='clang++-3.5 -std=c++11'
+@ a = 3
+while ( $a < 4 )
+mkdir $a
+  cd $a
+  sed "s/xxx/$a/ ; s/xxxnew/$a/ ; s/xxcut/1.1225/ ; s/xxnstep/step<10000/ ; s/xxcreate/1/ ; s/xxrestart/0/ ; s/xxthermo/1/ ; s/pair_detect/0/ " ../../MD_3D_structured.cpp > MD_3D_structured.cpp
+  sed "s/xxshift/1/ ; s/pair_detect/0/ " ../../pairforce_structured.h > pairforce_structured.h
+
+  cp ../../force_structured.h .
+  cp ../../structure_definitions.h .
+  cp ../../force_structured.cpp .
+  cp ../../vctr3D.h .
+  cp ../../vctr4D.h .
+  cp ../../defs.h .
+
+ g++ -std=c++11 MD_3D_structured.cpp force_structured.cpp -O3 -o MD_3D_structured.out 
+    ./MD_3D_structured.out | tee log
+
+  cd ..
+  @ a = $a + 1
+end
