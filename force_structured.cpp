@@ -167,17 +167,6 @@ for ( int i = 0 ; i < NrParticles ; i ++ )
     } // miy
   } // mix
 
-for ( int i = 0 ; i < NrParticles/2 ; i ++ ) // 2, not 2.0 , since we want integer value
-	{ 
-		dR=particle[2*i].pos-particle[2*i+1].pos;
-		dR.PBC(box,rbox);
-		particle[2*i].frc-=(dR)*Spring_Const;
-		particle[2*i+1].frc+=(dR)*Spring_Const;
-		*p_energy_spring+=0.5*Spring_Const*dR.norm2();
-
-	}
-
-
 }
 
 

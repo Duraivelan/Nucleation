@@ -99,13 +99,30 @@ std::vector<int> radialDistFunc(double XYZ[][3], double Lx,double Ly, double Lz,
 
 // forceUpdate fucntion included as force.h header file
 void verlet( vector<SubData>& particle ) {
-	
-	for(int i=0;i<NrParticles;i++) 
+	double a, b, c, lambda ;
+	vctr3D pos_old_A, pos_old_B , R_AB, R_AB_old;
+	for(int i=0;i<NrParticles/2;i++) 
 	{
-		particle[i].vel+=particle[i].frc*(0.5*dt*inv_mass);
-		particle[i].pos+=particle[i].vel*dt;
-		particle[i].pos.PBC(box,rbox);
-
+		pos_old_A = particle[2*i].pos;
+		pos_old_B = particle[2*i+1].pos;
+		particle[2*i].vel+=particle[2*i].frc*(0.5*dt*inv_mass);
+		particle[2*i].pos+=particle[2*i].vel*dt;
+		particle[2*i+1].vel+=particle[2*i+1].frc*(0.5*dt*inv_mass);
+		particle[2*i+1].pos+=particle[2*i+1].vel*dt;
+		R_AB = particle[2*i].pos-particle[2*i+1].pos; 		
+		R_AB_old = pos_old_A-pos_old_B;
+		R_AB.PBC( box , rbox);
+		R_AB_old.PBC(box , rbox);
+		
+		// lagragian normalization of bond length; see http://www.chem.purdue.edu/Slipchenko/courses/chem579/files/books/Leach_ch6_MD.pdf page 6 , or same file from google drive Books folder
+		a = (R_AB_old).norm2()*dt4_by_mu2;
+		b=(R_AB_old)*(R_AB)*2.0*dt2_by_mu;
+		c=(R_AB).norm2()-L02;
+		lambda = (-b+sqrt(b*b-4.0*a*c))/(2.0*a);
+		particle[2*i].pos+=R_AB_old*lambda*dt2*inv_mass;
+		particle[2*i+1].pos-=R_AB_old*lambda*dt2*inv_mass;
+		particle[2*i].pos.PBC( box , rbox);
+		particle[2*i+1].pos.PBC( box , rbox);
 	}
 }
 

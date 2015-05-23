@@ -4,7 +4,8 @@
 # include "structure_definitions.h"
 const double m =1;
 const double inv_mass =1/m;
-const double dt=0.01;
+const double dt=0.001;
+const double dt2= dt*dt;
 const int NrParticles=100;
 const double r_cut  = 5;
 const double r_cut2 = (r_cut)*(r_cut);
@@ -13,7 +14,7 @@ const double r_min = pow(2,1/6)*sigma;
 const double r_min2= r_min*r_min;
 const double rs = 6*r_min/7; // saturation radius, below this potential is assumed linear and force remains constant, to prevent calculation of huge forces at extremely close contacts 
 const double rs2=rs*rs;
-const double L0 = r_min/10.0; // L0 equlibrium length of the dimer molecular spring 
+const double L0 = sigma/5.0; // L0 equlibrium length of the dimer molecular spring 
 const double L02 = L0*L0;
 const double Spring_Const=10;
 const double red_m = m/2 ; //reduced mass
@@ -24,7 +25,9 @@ const double Volume_inv = 1/ Volume;
 const int cellx=(int) ceil(Lx/r_cut);
 const int celly=(int) ceil(Ly/r_cut);
 const int cellz=(int) ceil(Lz/r_cut);
-
+const double mu = 0.5 ; // reduced mass for a dimer of two identical spheres
+const double dt2_by_mu = dt*dt/mu;
+const double dt4_by_mu2 = dt2_by_mu*dt2_by_mu;
 const vctr3D unit_vec(1.0,1.0,1.0);
 const vctr3D box(Lx, Ly, Lz);
 const vctr3D rbox(1/Lx, 1/Ly, 1/Lz);
