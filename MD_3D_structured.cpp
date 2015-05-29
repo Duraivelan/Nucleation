@@ -118,9 +118,12 @@ void verlet( vector<SubData>& particle ) {
 		a = (R_AB_old).norm2()*dt4_by_mu2;
 		b=(R_AB_old)*(R_AB)*2.0*dt2_by_mu;
 		c=(R_AB).norm2()-L02;
-		lambda = (-b+sqrt(b*b-4.0*a*c))/(2.0*a);
-		particle[2*i].pos+=R_AB_old*lambda*dt2*inv_mass;
-		particle[2*i+1].pos-=R_AB_old*lambda*dt2*inv_mass;
+		if (c>RTOL2) 
+			{
+				lambda = (-b+sqrt(b*b-4.0*a*c))/(2.0*a);
+				particle[2*i].pos+=R_AB_old*lambda*dt2*inv_mass;
+				particle[2*i+1].pos-=R_AB_old*lambda*dt2*inv_mass;
+		}
 		particle[2*i].pos.PBC( box , rbox);
 		particle[2*i+1].pos.PBC( box , rbox);
 	}
