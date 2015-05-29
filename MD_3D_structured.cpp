@@ -345,31 +345,20 @@ do {
 
  	forceUpdate(step, pairs, &pairs_now, ptr_new,  ptr_old, MaxPairs, particle, &p_energy , &p_energy_spring);
 if (pair_detect) {	
+	
 	vector<vector<int>> temp_pair(pairs_now+1,vector<int> (3))	;
 	
 	for (int pn = 1; pn<=pairs_now ; pn++) 
-		{ 
-		
-			
+		{ 		
 			for (int j = 0; j< 3 ; j ++) 
 				{
 					temp_pair[pn][j]=pairs[ptr_new	][pn][j];
 				}
-	//			std::cout<<temp_pair[pn][0]<<'\t'<<temp_pair[pn][1]<<std::endl;
-
 		}		
-	//		std::cout<<"before sort "<<'\t'<<pairs_now<<endl;
 		
 	sort (temp_pair.begin()+1,temp_pair.end(), RowSort());
 	
-		//		std::cout<<"after sort "<<'\t'<<pairs_now<<endl;
-	for (int pn = 1; pn<=pairs_now ; pn++) 
-		{ 
-	//						std::cout<<temp_pair[pn][0]<<'\t'<<temp_pair[pn][1]<<std::endl;
 
-		}	
-	
-	
 	if(pairs_now>1) {	
 	int count=1;
 	do
@@ -388,15 +377,13 @@ if (pair_detect) {
 			count=count+1;			
 		} while (count<pairs_now);
 	}	
-	//		std::cout<<"after unique "<<'\t'<<pairs_now<<endl;
+	
 	for (int pn = 1; pn<=pairs_now ; pn++) 
 		{ 
 			for (int j = 0; j< 3 ; j ++) 
 				{
 					pairs[ptr_new][pn][j]=temp_pair[pn][j];
 				}
-		//					std::cout<<temp_pair[pn][0]<<'\t'<<temp_pair[pn][1]<<std::endl;
-
 		}	
 	
  //	! for all pairs in this step: did they exist before?
