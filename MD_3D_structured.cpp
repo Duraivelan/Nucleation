@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <algorithm>
 #include <functional>
+#include <cmath>
 #include <array>
 # include "defs.h"
 # include "force_structured.h"
@@ -123,6 +124,9 @@ void verlet( vector<SubData>& particle ) {
 				lambda = (-b+sqrt(b*b-4.0*a*c))/(2.0*a);
 				particle[2*i].pos+=R_AB_old*lambda*dt2*inv_mass;
 				particle[2*i+1].pos-=R_AB_old*lambda*dt2*inv_mass;
+				particle[2*i].vel+=R_AB_old*lambda*dt*inv_mass;
+				particle[2*i+1].vel-=R_AB_old*lambda*dt*inv_mass;
+				
 		}
 		particle[2*i].pos.PBC( box , rbox);
 		particle[2*i+1].pos.PBC( box , rbox);
@@ -130,19 +134,52 @@ void verlet( vector<SubData>& particle ) {
 }
 
 void verletB(vector<SubData>& particle, double vel_scale) {
+	double a, b, c, lambda , GAB, RV_AB ;
+	vctr3D pos_old_A, pos_old_B , V_AB, R_AB_old, D;
 	if(xxthermo) 
 		{
-		for(int i=0;i<NrParticles;i++) 
+		for(int i=0;i<NrParticles/2;i++) 
 			{
-				particle[i].vel+=particle[i].frc*(0.5*dt*inv_mass);
-				particle[i].vel=(particle[i].vel)*vel_scale;
+				pos_old_A = particle[2*i].pos;
+				pos_old_B = particle[2*i+1].pos;
+				particle[2*i].vel+=particle[2*i].frc*(0.5*dt*inv_mass);
+				particle[2*i+1].vel+=particle[2*i+1].frc*(0.5*dt*inv_mass);
+				R_AB_old = pos_old_A-pos_old_B;
+				V_AB = particle[2*i].vel - particle[2*i+1].vel;
+				R_AB_old.PBC( box , rbox);	
+				RV_AB = V_AB*R_AB_old;
+				GAB  = -RV_AB / ( ( inv_mass + inv_mass ) * L02 ) ;
+				if (  abs( GAB ) > RTOL )
+					{
+						D = R_AB_old * GAB;
+						particle[2*i].vel += D*inv_mass;
+						particle[2*i+1].vel -= D*inv_mass;
+					}
+				particle[2*i].vel=(particle[2*i].vel)*vel_scale;
+				particle[2*i+1].vel=(particle[2*i+1].vel)*vel_scale;
+			
 			}
        	} 
 	else 
 		{
-		for(int i=0;i<NrParticles;i++) 
+		for(int i=0;i<NrParticles/2;i++) 
 			{
-				particle[i].vel+=particle[i].frc*(0.5*dt*inv_mass);
+				pos_old_A = particle[2*i].pos;
+				pos_old_B = particle[2*i+1].pos;
+				particle[2*i].vel+=particle[2*i].frc*(0.5*dt*inv_mass);
+				particle[2*i+1].vel+=particle[2*i+1].frc*(0.5*dt*inv_mass);
+				R_AB_old = pos_old_A-pos_old_B;
+				V_AB = particle[2*i].vel - particle[2*i+1].vel;
+				R_AB_old.PBC( box , rbox);	
+				RV_AB = V_AB*R_AB_old;
+				GAB  = -RV_AB / ( ( inv_mass + inv_mass ) * L02 ) ;
+				if ( abs( GAB ) > RTOL )
+					{
+						D = R_AB_old * GAB;
+						particle[2*i].vel += D*inv_mass;
+						particle[2*i+1].vel -= D*inv_mass;
+					}
+			
 			}
        	}
 }
