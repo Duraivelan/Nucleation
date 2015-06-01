@@ -535,13 +535,13 @@ if (step%frame==0) {
 	}
       	outFile5<<'\n'<<std::endl;
       	outFile9<<'\n'<<std::endl;
-		outFile<<K_Energy<<std::endl;
-		outFile1<<p_energy<<'\t'<<p_energy_spring<<std::endl;
+
 		outFile5.close();
 		outFile9.close();
 	}
 
-
+		outFile<<K_Energy<<std::endl;
+		outFile1<<p_energy<<'\t'<<p_energy_spring<<std::endl;
 	outFile3<<Temp<<'\t'<<KE_rot<<std::endl;
 	
 	step+=1;

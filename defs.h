@@ -6,7 +6,7 @@ const double m =1;
 const double inv_mass =1/m;
 const double dt=0.001;
 const double dt2= dt*dt;
-const int NrParticles=100;
+const int NrParticles=200;
 const double r_cut  = 5;
 const double r_cut2 = (r_cut)*(r_cut);
 const double sigma =1, epsilon =1; 
