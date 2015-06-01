@@ -110,21 +110,15 @@ void verlet( vector<SubData>& particle ) {
 }
 
 void verletB(vector<SubData>& particle, double vel_scale) {
-	if(xxthermo) 
-		{
+
 		for(int i=0;i<NrParticles;i++) 
 			{
 				particle[i].vel+=particle[i].frc*(0.5*dt*inv_mass);
-				particle[i].vel=(particle[i].vel)*vel_scale;
-			}
-       	} 
-	else 
-		{
-		for(int i=0;i<NrParticles;i++) 
-			{
-				particle[i].vel+=particle[i].frc*(0.5*dt*inv_mass);
-			}
-       	}
+				if(xxthermo) 
+					{
+						particle[i].vel=(particle[i].vel)*vel_scale;
+					}
+			} 
 }
 
 int main() {
@@ -138,13 +132,13 @@ int main() {
 int if_create_particles = xxcreate, ifrestart=xxrestart;
          
 double kb=1 , T0=0.3, tauT=0.1;
-double Temp=0;
+double Temp=T0;
 double shear_rate = 0; //shear rate
 int ifshear = 0;// set equal to 1 for shear
 std::string dataFileName="../xxx",dataFileName_new="../xxxnew" ;
 int Max_Cluster_N=NrParticles;
 double simu_time=dt;
-int step=0, nSteps=10000, frame=10;
+int step=0, nSteps=10000;
 double vel_scale;
 int if_Periodic =1;
 
@@ -165,8 +159,6 @@ const int MaxSplit = 100 ;
 int pairs[2][ MaxPairs ][ 3 ] ;		// ! third index: 1,2 = particles, 3 = time of creation / annihilation
 int split[2][ MaxSplit ][ 3 ] ;	// ! ibid
 
-int life_span = 10000 	;			// ! life time of pair to qualify as "event"
-int save_span = 20000	;			// ! number of steps to be stored per event
 int save_step = 0   ; 				// ! frames predating this step are not to be removed
 int old_frame;
 int ptr_new = 0  ;					// ! pointers, toggle between 1 and 2
@@ -214,8 +206,14 @@ else {
         currentLine >> particle[i].vel.comp[0];
         currentLine >> particle[i].vel.comp[1];
         currentLine >> particle[i].vel.comp[2];
+        Temp+=0.5*m*(particle[i].vel.comp[0]*particle[i].vel.comp[0]
+				   + particle[i].vel.comp[1]*particle[i].vel.comp[1]
+				   + particle[i].vel.comp[2]*particle[i].vel.comp[2]);
 
     }
+        Temp=(Temp)/(1.5*NrParticles*kb);
+		vel_scale = sqrt(T0/Temp);
+		std::cout<<Temp<<'\t'<<vel_scale<<std::endl;
 }	
 } else {
 
@@ -249,12 +247,8 @@ else {
         currentLine1 >> particle[i].vel.comp[0];
         currentLine1 >> particle[i].vel.comp[1];
         currentLine1 >> particle[i].vel.comp[2];  
-        Temp+=0.5*m*(particle[i].vel.comp[0]*particle[i].vel.comp[0]
-				   + particle[i].vel.comp[1]*particle[i].vel.comp[1]
-				   + particle[i].vel.comp[2]*particle[i].vel.comp[2]);
               
     }
-    	Temp=(Temp)/(1.5*NrParticles*kb);
 		vel_scale = sqrt(T0/Temp);
 		std::cout<<Temp<<'\t'<<vel_scale<<std::endl;
 
@@ -327,6 +321,9 @@ do {
 	pairs_now = 0 ; // ! initiate
 
  	forceUpdate(step, pairs, &pairs_now, ptr_new,  ptr_old, MaxPairs, particle, &p_energy , &p_energy_spring);
+ 	
+	verletB( particle , vel_scale) ;
+
 if (pair_detect) {	
 	vector<vector<int>> temp_pair(pairs_now+1,vector<int> (3))	;
 	
@@ -520,8 +517,6 @@ if (step%frame==0) {
 	
 	step+=1;
 	vel_scale = sqrt(1+(T0/Temp-1)*(dt/tauT));
-
-	verletB( particle , vel_scale) ;
 
 } while(xxnstep);
 	

@@ -25,6 +25,10 @@ const int cellx=(int) ceil(Lx/r_cut);
 const int celly=(int) ceil(Ly/r_cut);
 const int cellz=(int) ceil(Lz/r_cut);
 
+const int life_span = 10000 	;			// ! life time of pair to qualify as "event"
+const int save_span = 20000	;			// ! number of steps to be stored per event
+const int frame = 10;
+
 const vctr3D unit_vec(1.0,1.0,1.0);
 const vctr3D box(Lx, Ly, Lz);
 const vctr3D rbox(1/Lx, 1/Ly, 1/Lz);
