@@ -17,7 +17,7 @@ const double rs2=rs*rs;
 const double L0 = sigma/5.0; // L0 equlibrium length of the dimer molecular spring 
 const double L02 = L0*L0;
 const double Spring_Const=10;
-const double RTOL = 1.0E-07*L0;
+const double RTOL = 1.0E-08*L0;
 const double RTOL2 = RTOL*RTOL;
 const double red_m = m/2 ; //reduced mass
 const double omega = sqrt(Spring_Const/red_m);  // w=sqrt(k/mu) ; spring oscillation frequency 

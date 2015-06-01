@@ -111,20 +111,21 @@ void verlet( vector<SubData>& particle ) {
 		particle[2*i+1].vel+=particle[2*i+1].frc*(0.5*dt*inv_mass);
 		particle[2*i+1].pos+=particle[2*i+1].vel*dt;
 		R_AB = particle[2*i].pos-particle[2*i+1].pos; 		
-		R_AB_old = pos_old_A-pos_old_B;
 		R_AB.PBC( box , rbox);
-		R_AB_old.PBC(box , rbox);
 		
 		// lagragian normalization of bond length; see http://www.chem.purdue.edu/Slipchenko/courses/chem579/files/books/Leach_ch6_MD.pdf page 6 , or same file from google drive Books folder
-		a = (R_AB_old).norm2()*dt4_by_mu2;
-		b=(R_AB_old)*(R_AB)*2.0*dt2_by_mu;
+
 		c=(R_AB).norm2()-L02;
 		if (c>RTOL2) 
 			{
+				R_AB_old = pos_old_A-pos_old_B;
+				R_AB_old.PBC(box , rbox);
+				a = (R_AB_old).norm2()*dt4_by_mu2;
+				b=(R_AB_old)*(R_AB)*2.0*dt2_by_mu;
 				lambda = (-b+sqrt(b*b-4.0*a*c))/(2.0*a);
-				particle[2*i].pos+=R_AB_old*lambda*dt2*inv_mass;
+				particle[2*i  ].pos+=R_AB_old*lambda*dt2*inv_mass;
 				particle[2*i+1].pos-=R_AB_old*lambda*dt2*inv_mass;
-				particle[2*i].vel+=R_AB_old*lambda*dt*inv_mass;
+				particle[2*i  ].vel+=R_AB_old*lambda*dt*inv_mass;
 				particle[2*i+1].vel-=R_AB_old*lambda*dt*inv_mass;
 				
 		}
@@ -134,28 +135,27 @@ void verlet( vector<SubData>& particle ) {
 }
 
 void verletB(vector<SubData>& particle, double vel_scale) {
-	double a, b, c, lambda , GAB, RV_AB ;
-	vctr3D pos_old_A, pos_old_B , V_AB, R_AB_old, D;
+	double GAB, RV_AB ;
+	vctr3D V_AB, R_AB, D;
 	if(xxthermo) 
 		{
 		for(int i=0;i<NrParticles/2;i++) 
 			{
-				pos_old_A = particle[2*i].pos;
-				pos_old_B = particle[2*i+1].pos;
-				particle[2*i].vel+=particle[2*i].frc*(0.5*dt*inv_mass);
+
+				particle[2*i  ].vel+=particle[2*i  ].frc*(0.5*dt*inv_mass);
 				particle[2*i+1].vel+=particle[2*i+1].frc*(0.5*dt*inv_mass);
-				R_AB_old = pos_old_A-pos_old_B;
+				R_AB = particle[2*i].pos - particle[2*i+1].pos;
 				V_AB = particle[2*i].vel - particle[2*i+1].vel;
-				R_AB_old.PBC( box , rbox);	
-				RV_AB = V_AB*R_AB_old;
+				R_AB.PBC( box , rbox);	
+				RV_AB = V_AB*R_AB;
 				GAB  = -RV_AB / ( ( inv_mass + inv_mass ) * L02 ) ;
 				if (  abs( GAB ) > RTOL )
 					{
-						D = R_AB_old * GAB;
-						particle[2*i].vel += D*inv_mass;
+						D = R_AB * GAB;
+						particle[2*i  ].vel += D*inv_mass;
 						particle[2*i+1].vel -= D*inv_mass;
 					}
-				particle[2*i].vel=(particle[2*i].vel)*vel_scale;
+				particle[2*i  ].vel=(particle[2*i  ].vel)*vel_scale;
 				particle[2*i+1].vel=(particle[2*i+1].vel)*vel_scale;
 			
 			}
@@ -164,19 +164,18 @@ void verletB(vector<SubData>& particle, double vel_scale) {
 		{
 		for(int i=0;i<NrParticles/2;i++) 
 			{
-				pos_old_A = particle[2*i].pos;
-				pos_old_B = particle[2*i+1].pos;
-				particle[2*i].vel+=particle[2*i].frc*(0.5*dt*inv_mass);
+
+				particle[2*i  ].vel+=particle[2*i  ].frc*(0.5*dt*inv_mass);
 				particle[2*i+1].vel+=particle[2*i+1].frc*(0.5*dt*inv_mass);
-				R_AB_old = pos_old_A-pos_old_B;
+				R_AB = particle[2*i].pos - particle[2*i+1].pos;
 				V_AB = particle[2*i].vel - particle[2*i+1].vel;
-				R_AB_old.PBC( box , rbox);	
-				RV_AB = V_AB*R_AB_old;
+				R_AB.PBC( box , rbox);	
+				RV_AB = V_AB*R_AB;
 				GAB  = -RV_AB / ( ( inv_mass + inv_mass ) * L02 ) ;
-				if ( abs( GAB ) > RTOL )
+				if (  abs( GAB ) > RTOL )
 					{
-						D = R_AB_old * GAB;
-						particle[2*i].vel += D*inv_mass;
+						D = R_AB * GAB;
+						particle[2*i  ].vel += D*inv_mass;
 						particle[2*i+1].vel -= D*inv_mass;
 					}
 			
@@ -222,8 +221,8 @@ const int MaxSplit = 100 ;
 int pairs[2][ MaxPairs ][ 3 ] ;		// ! third index: 1,2 = particles, 3 = time of creation / annihilation
 int split[2][ MaxSplit ][ 3 ] ;	// ! ibid
 
-int life_span = 10000 	;			// ! life time of pair to qualify as "event"
-int save_span = 20000	;			// ! number of steps to be stored per event
+int life_span = 20000 	;			// ! life time of pair to qualify as "event"
+int save_span = 40000	;			// ! number of steps to be stored per event
 int save_step = 0   ; 				// ! frames predating this step are not to be removed
 int old_frame;
 int ptr_new = 0  ;					// ! pointers, toggle between 1 and 2
