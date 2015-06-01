@@ -1,7 +1,7 @@
 #!/bin/csh -f
 alias clang++='clang++-3.5 -std=c++11'
-@ a = 3
-while ( $a < 4 )
+@ a = 4
+while ( $a < 5 )
 mkdir $a
   cd $a
   sed "s/xxx/$a/ ; s/xxxnew/$a/ ; s/xxcut/1.1225/ ; s/xxnstep/step<10000/ ; s/xxcreate/1/ ; s/xxrestart/0/ ; s/xxthermo/1/ ; s/pair_detect/0/ " ../../MD_3D_structured.cpp > MD_3D_structured.cpp

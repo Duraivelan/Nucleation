@@ -35,7 +35,9 @@ const vctr3D box(Lx, Ly, Lz);
 const vctr3D rbox(1/Lx, 1/Ly, 1/Lz);
 const vctr3D havbox (Lx/2, Ly/2 , Lz/2);
 const vctr3D shift(r_cut+r_min,r_cut+r_min,r_cut+r_min);
-
+const int life_span = 50000 ;			// ! life time of pair to qualify as "event"
+const int save_span = 100000 ;			// ! number of steps to be stored per event
+const int frame=100;
 const double Fs=4*epsilon*(12*pow(sigma/rs,12)-6*pow(sigma/rs,6))/rs;
 const double phis =4*epsilon*(pow(sigma/rs,12)-pow(sigma/rs,6));
 const double phicut =4*epsilon*(pow(sigma/r_cut,12)-pow(sigma/r_cut,6));

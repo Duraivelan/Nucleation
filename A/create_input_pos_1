@@ -1,8 +1,8 @@
 #!/bin/csh -f
 
 
-@ a = 3
-while ( $a < 4 )
+@ a = 4
+while ( $a < 5 )
 cd $a
   sed "s/xxx/$a/ ; s/xxxnew/$a/ ; s/xxcut/2.5/ ; s/xxnstep/step<1000/ ; s/xxcreate/0/ ; s/xxrestart/1/ ; s/xxthermo/1/ ; s/pair_detect/0/" ../../MD_3D_structured.cpp > MD_3D_structured.cpp
   sed "s/xxshift/0/ ; s/pair_detect/0/ " ../../pairforce_structured.h > pairforce_structured.h
@@ -20,8 +20,8 @@ g++ -std=c++11 MD_3D_structured.cpp force_structured.cpp -O3 -o MD_3D_structured
   @ a = $a + 1
 end
 
-@ a = 3
-while ( $a < 4 )
+@ a = 4
+while ( $a < 5 )
 cd $a
   sed "s/xxx/$a/ ; s/xxxnew/$a/ ; s/xxcut/2.5/ ; s/xxnstep/step>0/ ; s/xxcreate/0/ ; s/xxrestart/1/ ; s/xxthermo/0/ ; s/pair_detect/1/" ../../MD_3D_structured.cpp > MD_3D_structured.cpp
   sed "s/xxshift/0/ ; s/pair_detect/1/ " ../../pairforce_structured.h > pairforce_structured.h
