@@ -51,9 +51,9 @@ void createInitialPosition_N_particles(std::string fileName,std::string fileName
  	std::ofstream outFile(fileName);
  	std::ofstream outFile2(fileName2);
  	for(int i=0;i<N;i++) {
- 		x=((double) rand() / (RAND_MAX/Lx))-Lx/2;  // create particle position from -Lx/2 to Lx/2
-		y=((double) rand() / (RAND_MAX/Ly))-Ly/2;
-		z=((double) rand() / (RAND_MAX/Lz))-Lz/2;
+ 		x=((double) rand() / (RAND_MAX/Lx))-Lx/2.0;  // create particle position from -Lx/2 to Lx/2
+		y=((double) rand() / (RAND_MAX/Ly))-Ly/2.0;
+		z=((double) rand() / (RAND_MAX/Lz))-Lz/2.0;
 		vx= ((double) rand()/(RAND_MAX)-0.5);
 		vy= ((double) rand()/(RAND_MAX)-0.5);
 		vz= ((double) rand()/(RAND_MAX)-0.5);
@@ -67,22 +67,36 @@ void createInitialPosition_N_dimer_molecules(std::string fileName,std::string fi
  	srand (time(NULL)); // initialize random seed
  	std::ofstream outFile(fileName);
  	std::ofstream outFile2(fileName2);
- 	for(int i=0;i<N/2;i++) {
- 		x=((double) rand() / (RAND_MAX/Lx))-Lx/2;  // create particle position from -Lx/2 to Lx/2
-		y=((double) rand() / (RAND_MAX/Ly))-Ly/2;
-		z=((double) rand() / (RAND_MAX/Lz))-Lz/2;
-		vmolx= ((double) rand()/(RAND_MAX)-0.5);
-		vmoly= ((double) rand()/(RAND_MAX)-0.5);
-		vmolz= ((double) rand()/(RAND_MAX)-0.5);
-		vx= vmolx	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3);
-		vy= vmoly	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3);
-		vz= vmolz	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3);
-		outFile<<x<<'\t'<<y<<'\t'<<z<<std::endl;
-		outFile2<<vx<<'\t'<<vy<<'\t'<<vz<<std::endl;
+ 	for(int i=0;i<N/2;i++) 
+		{
+			x=((double) rand() / (RAND_MAX/Lx))-Lx/2.0;  // create particle position from -Lx/2 to Lx/2
+			y=((double) rand() / (RAND_MAX/Ly))-Ly/2.0;
+			z=((double) rand() / (RAND_MAX/Lz))-Lz/2.0;
+			if (xx_Spring) 
+				{
+					vmolx= ((double) rand()/(RAND_MAX)-0.5);
+					vmoly= ((double) rand()/(RAND_MAX)-0.5);
+					vmolz= ((double) rand()/(RAND_MAX)-0.5);
+					vx= vmolx	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3.0);
+					vy= vmoly	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3.0);
+					vz= vmolz	+	((double) rand() / (RAND_MAX)) * omega/sqrt(3.0);
+					outFile<<x<<'\t'<<y<<'\t'<<z<<std::endl;
+					outFile2<<vx<<'\t'<<vy<<'\t'<<vz<<std::endl;
+					vx=vmolx-(vx-vmolx);
+					vy=vmoly-(vy-vmoly);
+					vz=vmolz-(vz-vmolz);
+				} else 
+				{
+					vmolx= ((double) rand()/(RAND_MAX)-0.5);
+					vmoly= ((double) rand()/(RAND_MAX)-0.5);
+					vmolz= ((double) rand()/(RAND_MAX)-0.5);
+					vx= ((double) rand()/(RAND_MAX)-0.5);
+					vy= ((double) rand()/(RAND_MAX)-0.5);
+					vz= ((double) rand()/(RAND_MAX)-0.5);
+					outFile<<x<<'\t'<<y<<'\t'<<z<<std::endl;
+					outFile2<<vx<<'\t'<<vy<<'\t'<<vz<<std::endl;	
+				}
 		x=x+L0;  // create particle position at L0 from frist molecule 
-		vx=vmolx-(vx-vmolx);
-		vy=vmoly-(vy-vmoly);
-		vz=vmolz-(vz-vmolz);
 		outFile<<x<<'\t'<<y<<'\t'<<z<<std::endl;
 		outFile2<<vx<<'\t'<<vy<<'\t'<<vz<<std::endl;
  	}
@@ -172,7 +186,7 @@ int main() {
          
 int if_create_particles = xxcreate, ifrestart=xxrestart;
          
-double kb=1 , T0=0.3, tauT=0.1;
+double kb=1.0 , T0=0.3, tauT=0.1;
 double Temp=T0;
 double shear_rate = 0; //shear rate
 int ifshear = 0;// set equal to 1 for shear
@@ -184,7 +198,7 @@ double vel_scale;
 int if_Periodic =1;
 
 std::cout<<cellx<<'\t'<<celly<<'\t'<<cellz<<std::endl;
-double  T_Energy, K_Energy, P_Energy, p_energy=0, p_energy_spring=0;
+double  T_Energy, K_Energy, P_Energy, p_energy=0.0, p_energy_spring=0.0;
 vctr3D L_dimer[NrParticles/2];  // distance between particles of the dimer molecule 
 vctr3D dR, dr2;
 double R, r2;
@@ -545,7 +559,7 @@ if (step%frame==0) {
 	outFile3<<Temp<<'\t'<<KE_rot<<std::endl;
 	
 	step+=1;
-	vel_scale = sqrt(1+(T0/Temp-1)*(dt/tauT));
+	vel_scale = sqrt(1.0+(T0/Temp-1.0)*(dt/tauT));
 
 
 } while(xxnstep);
